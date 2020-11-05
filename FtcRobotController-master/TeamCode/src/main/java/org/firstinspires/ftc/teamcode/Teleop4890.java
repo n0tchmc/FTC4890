@@ -3,10 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-//
 
 @TeleOp(name = "Teleop4890")
 public class Teleop4890 extends LinearOpMode {
@@ -24,7 +22,6 @@ public class Teleop4890 extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
-    double power = 1;
 
     //toggles for some of the robot's functions
     boolean intakeToggle = false;
@@ -50,15 +47,11 @@ public class Teleop4890 extends LinearOpMode {
         Claw = hardwareMap.servo.get("Claw");
         Launcher = hardwareMap.servo.get("Launcher");
 
-        //sets the direction of motors, right motors always reversed due to their placement
-        driveFrontLeft.setDirection(DcMotor.Direction.FORWARD);
-        driveBackLeft.setDirection(DcMotor.Direction.FORWARD);
+        //sets the direction of motors and positions of servos
+        //right motors always reversed due to their placement
         driveFrontRight.setDirection(DcMotor.Direction.REVERSE);
         driveBackRight.setDirection(DcMotor.Direction.REVERSE);
-        outtakeLeft.setDirection(DcMotor.Direction.FORWARD);
         outtakeRight.setDirection(DcMotor.Direction.REVERSE);
-        Intake.setDirection(DcMotor.Direction.FORWARD);
-        Arm.setDirection(DcMotor.Direction.FORWARD);
         Claw.setPosition(0);
         Launcher.setPosition(0);
 
@@ -108,7 +101,7 @@ public class Teleop4890 extends LinearOpMode {
                 intakeToggle = !intakeToggle;
             }
 
-            while (intakeToggle = true) {
+            while (intakeToggle) {
                 intakeSys();
             }
 
@@ -128,31 +121,31 @@ public class Teleop4890 extends LinearOpMode {
     //Controller 1 Controls:
     //controls for motors on left side
     void leftDrive() {
-        driveFrontLeft.setPower(gamepad1.left_stick_y * power);
-        driveBackLeft.setPower(gamepad1.left_stick_y * power);
+        driveFrontLeft.setPower(gamepad1.left_stick_y);
+        driveBackLeft.setPower(gamepad1.left_stick_y);
     }
 
     //controls for motors on right side
     void rightDrive() {
-        driveFrontRight.setPower(gamepad1.right_stick_y * power);
-        driveBackRight.setPower(gamepad1.right_stick_y * power);
+        driveFrontRight.setPower(gamepad1.right_stick_y);
+        driveBackRight.setPower(gamepad1.right_stick_y);
 
     }
 
     //controls for strafing left
     void strafeLeft() {
-        driveFrontRight.setPower(gamepad1.left_trigger * power);
-        driveFrontLeft.setPower(-gamepad1.left_trigger * power);
-        driveBackRight.setPower(-gamepad1.left_trigger * power);
-        driveBackLeft.setPower(gamepad1.left_trigger * power);
+        driveFrontRight.setPower(gamepad1.left_trigger);
+        driveFrontLeft.setPower(-gamepad1.left_trigger);
+        driveBackRight.setPower(-gamepad1.left_trigger);
+        driveBackLeft.setPower(gamepad1.left_trigger);
     }
 
     //controls for strafing right
     void strafeRight() {
-        driveFrontRight.setPower(-gamepad1.right_trigger * power);
-        driveFrontLeft.setPower(gamepad1.right_trigger * power);
-        driveBackRight.setPower(gamepad1.right_trigger * power);
-        driveBackLeft.setPower(-gamepad1.right_trigger * power);
+        driveFrontRight.setPower(-gamepad1.right_trigger);
+        driveFrontLeft.setPower(gamepad1.right_trigger);
+        driveBackRight.setPower(gamepad1.right_trigger);
+        driveBackLeft.setPower(-gamepad1.right_trigger);
     }
 
     //intake system
@@ -169,8 +162,6 @@ public class Teleop4890 extends LinearOpMode {
 
     //arm controls
     void armSys() {
-        Arm.setPower(gamepad2.left_stick_y * power);
+        Arm.setPower(gamepad2.left_stick_y);
     }
 }
-
-
