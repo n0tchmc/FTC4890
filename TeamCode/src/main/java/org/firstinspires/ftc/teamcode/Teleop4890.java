@@ -66,10 +66,10 @@ public class Teleop4890 extends LinearOpMode {
                 BackLeftVal /= wheelPowers[3];
                 BackRightVal /= wheelPowers[3];
             }
-            robot.frontLeft.setPower(FrontLeftVal * 0.63);
-            robot.frontRight.setPower(FrontRightVal * 0.63);
-            robot.backLeft.setPower(BackLeftVal * 0.63);
-            robot.backRight.setPower(BackRightVal * 0.63);
+            robot.frontLeft.setPower(FrontLeftVal);
+            robot.frontRight.setPower(FrontRightVal);
+            robot.backLeft.setPower(BackLeftVal);
+            robot.backRight.setPower(BackRightVal);
 
 
             //clockwise carousel
