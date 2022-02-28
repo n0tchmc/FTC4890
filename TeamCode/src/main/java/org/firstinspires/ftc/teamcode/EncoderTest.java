@@ -13,7 +13,6 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Disabled
 @Autonomous(name = "EncoderTest", preselectTeleOp = "Teleop4890")
 public class EncoderTest extends LinearOpMode {
 
