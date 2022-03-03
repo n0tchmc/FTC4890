@@ -39,13 +39,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.opencv.core.Mat;
 
-public class Robot {
+public class RobotAuto {
 
     /* Public OpMode members. */
-    public DcMotor frontRight;
-    public DcMotor backRight;
-    public DcMotor frontLeft;
-    public DcMotor backLeft;
     public DcMotor arm;
     public DcMotor pivot;
     public DcMotor carousel;
@@ -60,7 +56,7 @@ public class Robot {
     public ElapsedTime runtime = new ElapsedTime();
 
     /* Constructor */
-    public Robot() {
+    public RobotAuto() {
 
     }
 
@@ -70,10 +66,6 @@ public class Robot {
         hwMap = ahwMap;
 
         // Define and Initialize Devices
-        frontRight = hwMap.get(DcMotor.class, "frontRight");
-        backLeft = hwMap.get(DcMotor.class, "backLeft");
-        frontLeft = hwMap.get(DcMotor.class, "frontLeft");
-        backRight = hwMap.get(DcMotor.class, "backRight");
         claw = hwMap.crservo.get("claw");
         clawGrab = hwMap.crservo.get("clawGrab");
         arm = hwMap.dcMotor.get("arm");
@@ -88,10 +80,6 @@ public class Robot {
         clawSensor.setMode(DigitalChannel.Mode.INPUT);
 
         // Setting motor directions
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
         carousel.setDirection(DcMotor.Direction.FORWARD);
         pivot.setDirection(DcMotor.Direction.FORWARD);
         claw.setDirection(DcMotorSimple.Direction.FORWARD);

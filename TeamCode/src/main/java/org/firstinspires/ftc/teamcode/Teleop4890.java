@@ -52,10 +52,10 @@ public class Teleop4890 extends LinearOpMode {
             telemetry.update();
 
             //controller 1 functions
-            double FrontLeftVal = gamepad1.left_stick_y - (gamepad1.left_stick_x) + -gamepad1.right_stick_x;
-            double FrontRightVal = gamepad1.left_stick_y + (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
-            double BackLeftVal = gamepad1.left_stick_y + (gamepad1.left_stick_x) + -gamepad1.right_stick_x;
-            double BackRightVal = gamepad1.left_stick_y - (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
+            double FrontLeftVal = robot.powerFunction(gamepad1.left_stick_y) - (robot.powerFunction(gamepad1.left_stick_x)) + -robot.powerFunction(gamepad1.right_stick_x);
+            double FrontRightVal = robot.powerFunction(gamepad1.left_stick_y) + (robot.powerFunction(gamepad1.left_stick_x)) - -robot.powerFunction(gamepad1.right_stick_x);
+            double BackLeftVal = robot.powerFunction(gamepad1.left_stick_y) + (robot.powerFunction(gamepad1.left_stick_x)) + -robot.powerFunction(gamepad1.right_stick_x);
+            double BackRightVal = robot.powerFunction(gamepad1.left_stick_y) - (robot.powerFunction(gamepad1.left_stick_x)) - -robot.powerFunction(gamepad1.right_stick_x);
 
             //Move range to between 0 and +1, if not already
             double[] wheelPowers = {FrontRightVal, FrontLeftVal, BackLeftVal, BackRightVal};
@@ -66,10 +66,10 @@ public class Teleop4890 extends LinearOpMode {
                 BackLeftVal /= wheelPowers[3];
                 BackRightVal /= wheelPowers[3];
             }
-            robot.frontLeft.setPower(FrontLeftVal * 0.8);
-            robot.frontRight.setPower(FrontRightVal * 0.8);
-            robot.backLeft.setPower(BackLeftVal * 0.8);
-            robot.backRight.setPower(BackRightVal * 0.8);
+            robot.frontLeft.setPower(FrontLeftVal);
+            robot.frontRight.setPower(FrontRightVal);
+            robot.backLeft.setPower(BackLeftVal);
+            robot.backRight.setPower(BackRightVal);
 
 
             //clockwise carousel
