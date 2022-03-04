@@ -1,3 +1,5 @@
+// Used only for testing
+
 package com.example.android.meepmeep;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -34,16 +36,13 @@ public class MeepMeepTesting {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(56.9087263114899325, 30, Math.toRadians(180), Math.toRadians(180), 13.45)
                 .followTrajectorySequence(drive ->
-//                        drive.trajectorySequenceBuilder(new Pose2d(-36, -62, Math.toRadians(90)))
-//                                .splineToConstantHeading(new Vector2d(-59.75, -60), Math.toRadians(90))
-//                                .waitSeconds(0.5)
-//                                .lineTo(new Vector2d(-59.75, -61.5))
-//                                .waitSeconds(1)adb
-//                                .splineTo(new Vector2d(-26.5, -43), Math.toRadians(55))
-//                                .waitSeconds(1)
-//                                .splineToLinearHeading(new Pose2d(-63, -36), Math.toRadians(0))
-//                                .build()
-                        redWarehoue
+                        drive.trajectorySequenceBuilder(new Pose2d(-36, -62, Math.toRadians(90)))
+                                .forward(2)
+                                .strafeLeft(20)
+                                .waitSeconds(1)
+                                .splineTo(new Vector2d(-27.5, -45), Math.toRadians(50))
+                                .splineToLinearHeading(new Pose2d(-60, -35), Math.toRadians(0))
+                                .build()
                 );
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_FREIGHTFRENZY_ADI_DARK)

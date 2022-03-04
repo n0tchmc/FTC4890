@@ -19,7 +19,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Config
-@Autonomous()
+@Autonomous(preselectTeleOp = "Teleop4890")
 public class RedWarehouseAuto extends LinearOpMode {
     RobotAuto robot = new RobotAuto();
     OpenCvCamera camera;
@@ -217,9 +217,6 @@ public class RedWarehouseAuto extends LinearOpMode {
                 }
                 robot.claw.setPower(0);
 
-//                robot.arm.setPower(0.9);
-//                sleep(2200);
-//                robot.arm.setPower(0);
                 while (robot.armSensor.getState()) {
                     robot.arm.setPower(0.9);
                 }

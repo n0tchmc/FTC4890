@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.sequencesegment.TrajectorySegment;
+import org.opencv.core.Mat;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -19,8 +20,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Config
-@Autonomous()
-public class RedCarouselAuto1 extends LinearOpMode {
+@Autonomous(preselectTeleOp = "Teleop4890")
+public class BlueCarouselAuto extends LinearOpMode {
     RobotAuto robot = new RobotAuto();
     OpenCvCamera camera;
     AprilTagDetectionPipeline pipeline;
@@ -79,10 +80,10 @@ public class RedCarouselAuto1 extends LinearOpMode {
             }
         });
 
-        detection detectionResult = detection.LEVEL_THREE;
+        detection detectionResult = detection.DETECTION_FAILED;
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d pose = new Pose2d(-36, -62, Math.toRadians(90));
+        Pose2d pose = new Pose2d(-36, 62, Math.toRadians(-90));
         drive.setPoseEstimate(pose);
         TrajectorySequence trajSeq = drive.trajectorySequenceBuilder(pose).strafeRight(40).build();
         TrajectorySequence trajSeq1 = drive.trajectorySequenceBuilder(pose).strafeRight(40).build();
@@ -161,86 +162,132 @@ public class RedCarouselAuto1 extends LinearOpMode {
         waitForStart();
 
         if (detectionResult == detection.LEVEL_ONE) {
-            trajSeq = drive.trajectorySequenceBuilder(pose)
-                    .splineTo(new Vector2d(1.5, -42), Math.toRadians(130))
-                    .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                        while (robot.clawSensor.getState()) {
-                            robot.claw.setPower(1);
-                        }
-                        robot.claw.setPower(0);
-
-                        robot.pivot.setPower(-0.35);
-                    })
-                    .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
-                        robot.pivot.setPower(0);
-                        robot.clawGrab.setPower(-1);
-                    })
-                    .UNSTABLE_addTemporalMarkerOffset(5, () -> {
-                        robot.clawGrab.setPower(0);
-                    })
-                    .waitSeconds(4)
-                    .splineToLinearHeading(new Pose2d(12, -64), Math.toRadians(0))
-                    .forward(40)
+            trajSeq1 = drive.trajectorySequenceBuilder(pose)
+                    .forward(2)
+                    .strafeRight(21)
+                    .turn(Math.toRadians(80))
                     .build();
-        } else if (detectionResult == detection.LEVEL_TWO) {
-            trajSeq = drive.trajectorySequenceBuilder(pose)
-                    .splineTo(new Vector2d(1.5, -42), Math.toRadians(125))
-                    .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                        while (robot.clawSensor.getState()) {
-                            robot.claw.setPower(1);
-                        }
-                        robot.claw.setPower(0);
-                        robot.clawGrab.setPower(-1);
-                    })
-                    .UNSTABLE_addTemporalMarkerOffset(5, () -> {
-                        robot.clawGrab.setPower(0);
-                    })
-                    .waitSeconds(4)
-                    .splineToLinearHeading(new Pose2d(12, -64), Math.toRadians(0))
-                    .forward(40)
+//            traj1 = drive.trajectoryBuilder(trajSeq1.end()).splineTo(new Vector2d(-22.5, -40), Math.toRadians(60)).build();
+            traj1 = drive.trajectoryBuilder(trajSeq1.end()).splineToConstantHeading(new Vector2d(-25.5, 41), Math.toRadians(-90)).build();
+            traj2 = drive.trajectoryBuilder(traj1.end()).splineToConstantHeading(new Vector2d(-62, 34), Math.toRadians(0)).build();
+        } else if ((detectionResult == detection.LEVEL_TWO) || (detectionResult == detection.DETECTION_FAILED)) {
+            trajSeq1 = drive.trajectorySequenceBuilder(pose)
+                    .forward(2)
+                    .strafeRight(21)
+                    .turn(Math.toRadians(80))
                     .build();
+//            traj1 = drive.trajectoryBuilder(trajSeq1.end()).splineTo(new Vector2d(-22.5, -40), Math.toRadians(60)).build();
+            traj1 = drive.trajectoryBuilder(trajSeq1.end()).splineToConstantHeading(new Vector2d(-25.5, 41), Math.toRadians(-90)).build();
+            traj2 = drive.trajectoryBuilder(traj1.end()).splineToConstantHeading(new Vector2d(-60, 34), Math.toRadians(0)).build();
         } else if (detectionResult == detection.LEVEL_THREE) {
             trajSeq1 = drive.trajectorySequenceBuilder(pose)
                     .forward(2)
-                    .strafeLeft(20)
-                    .waitSeconds(1)
+                    .strafeRight(21)
+                    .turn(Math.toRadians(80))
                     .build();
-            traj1 = drive.trajectoryBuilder(trajSeq1.end()).splineToLinearHeading(new Pose2d(-22.5, -40), Math.toRadians(60)).build();
-            traj2 = drive.trajectoryBuilder(traj1.end()).splineToLinearHeading(new Pose2d(-60, -35), Math.toRadians(0)).build();
+//            traj1 = drive.trajectoryBuilder(trajSeq1.end()).splineTo(new Vector2d(-22.5, -40), Math.toRadians(60)).build();
+            traj1 = drive.trajectoryBuilder(trajSeq1.end()).splineToConstantHeading(new Vector2d(-27.5, 45), Math.toRadians(-90)).build();
+            traj2 = drive.trajectoryBuilder(traj1.end()).splineToConstantHeading(new Vector2d(-62, 34), Math.toRadians(0)).build();
         }
 
         if(isStopRequested()) return;
 
         if (detectionResult == detection.DETECTION_FAILED) {
-            drive.followTrajectorySequence(defaultTraj);
+            drive.followTrajectorySequence(trajSeq1);
+            carouselCounter(2500);
+            drive.followTrajectory(traj1);
+            drive.turn(Math.toRadians(-55));
+            while (robot.clawSensor.getState()) {
+                robot.claw.setPower(1);
+            }
+            robot.claw.setPower(0);
+
+            outtake(3500);
+            robot.claw.setPower(-1);
+            sleep(2300);
+            robot.claw.setPower(0);
+            drive.turn(Math.toRadians(55));
+            drive.followTrajectory(traj2);
+            robot.arm.setPower(-0.9);
+            sleep(350);
+            robot.arm.setPower(0);
         } else if (detectionResult == detection.LEVEL_ONE) {
-            drive.followTrajectorySequence(trajSeq);
+            drive.followTrajectorySequence(trajSeq1);
+            carouselCounter(2500);
+            drive.followTrajectory(traj1);
+            drive.turn(Math.toRadians(-55));
+            while (robot.clawSensor.getState()) {
+                robot.claw.setPower(1);
+            }
+            robot.claw.setPower(0);
+
+            robot.pivot.setPower(-0.35);
+            sleep(750);
+            robot.pivot.setPower(0);
+
+            outtake(3500);
+            robot.claw.setPower(-1);
+            sleep(2000);
+            robot.claw.setPower(0);
+
+            robot.pivot.setPower(1);
+            sleep(200);
+            robot.pivot.setPower(0);
+
+            drive.turn(Math.toRadians(55));
+            drive.followTrajectory(traj2);
+            robot.arm.setPower(-0.9);
+            sleep(200);
+            robot.arm.setPower(0);
         }  else if (detectionResult == detection.LEVEL_TWO) {
             drive.followTrajectorySequence(trajSeq1);
+            carouselCounter(2500);
             drive.followTrajectory(traj1);
+            drive.turn(Math.toRadians(-55));
             while (robot.clawSensor.getState()) {
                 robot.claw.setPower(1);
             }
             robot.claw.setPower(0);
 
-            robot.pivot.setPower(-0.35);
-            sleep(230);
-            robot.pivot.setPower(0);
             outtake(3500);
+            robot.claw.setPower(-1);
+            sleep(2000);
+            robot.claw.setPower(0);
+            drive.turn(Math.toRadians(55));
             drive.followTrajectory(traj2);
+            robot.arm.setPower(-0.9);
+            sleep(200);
+            robot.arm.setPower(0);
         } else if (detectionResult == detection.LEVEL_THREE) {
             drive.followTrajectorySequence(trajSeq1);
+            carouselCounter(2500);
             drive.followTrajectory(traj1);
+            drive.turn(Math.toRadians(-55));
             while (robot.clawSensor.getState()) {
                 robot.claw.setPower(1);
             }
             robot.claw.setPower(0);
 
-            robot.pivot.setPower(-0.35);
-            sleep(230);
-            robot.pivot.setPower(0);
+//                robot.arm.setPower(0.9);
+//                sleep(2200);
+//                robot.arm.setPower(0);
+            while (robot.armSensor.getState()) {
+                robot.arm.setPower(0.9);
+            }
+            robot.arm.setPower(0);
+
             outtake(3500);
+            robot.arm.setPower(-0.9);
+            sleep(1100);
+            robot.arm.setPower(0);
+            robot.claw.setPower(-1);
+            sleep(2000);
+            robot.claw.setPower(0);
+            drive.turn(Math.toRadians(55));
             drive.followTrajectory(traj2);
+            robot.arm.setPower(-0.9);
+            sleep(150);
+            robot.arm.setPower(0);
         }
     }
 
@@ -248,6 +295,12 @@ public class RedCarouselAuto1 extends LinearOpMode {
         robot.clawGrab.setPower(-1);
         sleep((milliseconds));
         robot.clawGrab.setPower(0);
+    }
+
+    void carouselCounter(int milliseconds) {
+        robot.carousel.setPower(-1);
+        sleep(milliseconds);
+        robot.carousel.setPower(0);
     }
 }
 

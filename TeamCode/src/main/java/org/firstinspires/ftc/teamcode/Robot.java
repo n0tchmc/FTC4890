@@ -83,6 +83,7 @@ public class Robot {
         clawSensor = hwMap.digitalChannel.get("ClawSensor");
         clawColor = hwMap.colorSensor.get("clawColor");
 
+        carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         armSensor.setMode(DigitalChannel.Mode.INPUT);
         clawSensor.setMode(DigitalChannel.Mode.INPUT);
@@ -97,20 +98,6 @@ public class Robot {
         claw.setDirection(DcMotorSimple.Direction.FORWARD);
         arm.setDirection(DcMotorSimple.Direction.FORWARD);
         clawGrab.setDirection(DcMotorSimple.Direction.FORWARD);
-    }
-
-    public double powerFunction(double x) {
-        if (x < 0) {
-            return -(x*x);
-        }
-
-        return x*x;
-//        if (x >= 0) {
-//            return (((Math.pow(Math.E, Math.abs(x)))/ Math.E) - (1/Math.E)) * (Math.E/(Math.E-1));
-//        } else if (x < 0) {
-//            return -((((Math.pow(Math.E, Math.abs(x)))/ Math.E) - (1/Math.E)) * (Math.E/(Math.E-1)));
-//        }
-//        return (((Math.pow(Math.E, Math.abs(x)))/ Math.E) - (1/Math.E)) * (Math.E/(Math.E-1));
     }
 
     public void sleep(long milliseconds) {
