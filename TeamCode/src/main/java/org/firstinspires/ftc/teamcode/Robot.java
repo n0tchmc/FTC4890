@@ -29,31 +29,24 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.opencv.core.Mat;
 
 public class Robot {
 
     /* Public OpMode members. */
+    //Revolutionary Lift Mechanism
+    public DcMotor WM40;
+    public DcMotor RLM;
     public DcMotor frontRight;
     public DcMotor backRight;
     public DcMotor frontLeft;
     public DcMotor backLeft;
-    public DcMotor arm;
-    public DcMotor pivot;
-    public DcMotor carousel;
-    public CRServo claw;
-    public CRServo clawGrab;
-    public DigitalChannel armSensor;
-    public DigitalChannel clawSensor;
-    public ColorSensor clawColor;
+    public Servo claw;
+
 
     /* local OpMode members. */
     HardwareMap hwMap = null;
@@ -74,38 +67,17 @@ public class Robot {
         backLeft = hwMap.get(DcMotor.class, "backLeft");
         frontLeft = hwMap.get(DcMotor.class, "frontLeft");
         backRight = hwMap.get(DcMotor.class, "backRight");
-        claw = hwMap.crservo.get("claw");
-        clawGrab = hwMap.crservo.get("clawGrab");
-        arm = hwMap.dcMotor.get("arm");
-        pivot = hwMap.dcMotor.get("pivot");
-        carousel = hwMap.dcMotor.get("carousel");
-        armSensor = hwMap.digitalChannel.get("ArmSensor");
-        clawSensor = hwMap.digitalChannel.get("ClawSensor");
-        clawColor = hwMap.colorSensor.get("clawColor");
-
-        carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        armSensor.setMode(DigitalChannel.Mode.INPUT);
-        clawSensor.setMode(DigitalChannel.Mode.INPUT);
+        RLM = hwMap.get(DcMotor.class, "RLM");      //left side (looking behind the robot)
+        WM40 = hwMap.get(DcMotor.class, "WM40");    //right side
+        claw = hwMap.get(Servo.class, "claw");
 
         // Setting motor directions
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
-        carousel.setDirection(DcMotor.Direction.FORWARD);
-        pivot.setDirection(DcMotor.Direction.FORWARD);
-        claw.setDirection(DcMotorSimple.Direction.FORWARD);
-        arm.setDirection(DcMotorSimple.Direction.FORWARD);
-        clawGrab.setDirection(DcMotorSimple.Direction.FORWARD);
-    }
-
-    public void sleep(long milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        frontLeft.setDirection(DcMotor.Direction.FORWARD);
+        backLeft.setDirection(DcMotor.Direction.FORWARD);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
+        RLM.setDirection(DcMotor.Direction.REVERSE);
+        WM40.setDirection(DcMotor.Direction.REVERSE);
     }
 }
 

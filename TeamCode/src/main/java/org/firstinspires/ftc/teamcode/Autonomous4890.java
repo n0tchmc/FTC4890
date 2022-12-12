@@ -5,15 +5,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "EncoderTest", preselectTeleOp = "Teleop4890")
-public class EncoderTest extends LinearOpMode {
+@Autonomous(name = "Autonomous4890", preselectTeleOp = "Teleop4890")
+public class Autonomous4890 extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline pipeline;
     Robot robot = new Robot();
@@ -143,7 +143,46 @@ public class EncoderTest extends LinearOpMode {
 
         if(isStopRequested()) return;
 
-        straight(0.4,5000);
+        if (detectionResult == detection.LEFT) {
+            robot.claw.setPosition(0);
+            sleep(1000);
+            straight(0.3,500);
+            sleep(500);
+            arm(1, 500);
+            straight(0.3, 1300);
+            sleep(2000);
+            strafeLeft(0.5, 1100);
+            arm(-1, 300);
+        } else if (detectionResult == detection.MIDDLE) {
+            robot.claw.setPosition(0);
+            sleep(1000);
+            straight(0.3,500);
+            sleep(500);
+            arm(1, 500);
+            straight(0.3, 1300);
+            sleep(2000);
+            arm(-1, 300);
+        } else if (detectionResult == detection.RIGHT) {
+            robot.claw.setPosition(0);
+            sleep(1000);
+            straight(0.3,500);
+            sleep(500);
+            arm(1, 500);
+            straight(0.3, 1300);
+            sleep(2000);
+            strafeRight(0.5, 1150);
+            arm(-1, 300);
+        } else {
+            robot.claw.setPosition(0);
+            sleep(1000);
+            straight(0.3,500);
+            sleep(500);
+            arm(1, 500);
+            straight(0.3, 1300);
+            sleep(2000);
+            strafeRight(0.5, 1150);
+            arm(-1, 300);
+        }
 
         //if(isStopRequested()) return;
 

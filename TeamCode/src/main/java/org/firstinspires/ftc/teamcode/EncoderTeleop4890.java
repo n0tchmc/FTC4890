@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import java.util.Arrays;
 
-@TeleOp(name = "Teleop4890")
-public class Teleop4890 extends LinearOpMode {
+@TeleOp(name = "EncoderTeleop4890")
+public class EncoderTeleop4890 extends LinearOpMode {
     Robot robot = new Robot();
 
     Gamepad.RumbleEffect customRumbleEffect;
@@ -16,6 +16,8 @@ public class Teleop4890 extends LinearOpMode {
     Gamepad.RumbleEffect roundEndWarn;
 
     int robotCycle = 0;
+    int encoderValueLeft = 0;
+    int encoderValueRight = 0;
     double slowToggle;
 
     @Override
@@ -48,9 +50,10 @@ public class Teleop4890 extends LinearOpMode {
 
         robot.RLM.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.WM40.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        robot.RLM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.WM40.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.RLM.setTargetPosition(0);
+        robot.WM40.setTargetPosition(0);
+        robot.RLM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.WM40.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         waitForStart();
         resetRuntime();
@@ -88,6 +91,7 @@ public class Teleop4890 extends LinearOpMode {
 
             //player 2 functions
 
+            /*
             if ((gamepad2.left_stick_y < 0) && gamepad2.right_stick_y < 0) {
                 robot.RLM.setPower(Math.abs(gamepad2.left_stick_y));
                 robot.WM40.setPower(Math.abs(gamepad2.left_stick_y));
@@ -104,6 +108,56 @@ public class Teleop4890 extends LinearOpMode {
             }
             else {
                 robot.RLM.setPower(0);
+                robot.WM40.setPower(0);
+            }*/
+
+            if(gamepad2.dpad_left) { //low
+                encoderValueLeft = 2240;
+                encoderValueRight = 3975;
+            }
+            else if (gamepad2.dpad_up) { //med
+                encoderValueLeft = 3205;
+                encoderValueRight = 5995;
+            }
+            else if (gamepad2.dpad_right) { // high
+                encoderValueLeft = 4600;
+                encoderValueRight = 8050;
+            }
+            else if (gamepad2.dpad_down) { // ground
+                encoderValueLeft = 0;
+                encoderValueRight = 0;
+            }
+            else if (gamepad2.left_bumper) { //1st in stack
+                encoderValueLeft = 1285;
+                encoderValueRight = 2230;
+            }
+            else if (gamepad2.right_bumper) { //200ish ticks down per each cone
+                encoderValueLeft -= 200;
+                encoderValueRight -= 200;
+            }
+
+            //left side encoders
+            if (robot.RLM.getCurrentPosition() < encoderValueLeft) {
+                robot.RLM.setTargetPosition(encoderValueLeft);
+                robot.RLM.setPower(1);
+            }
+            else if (robot.RLM.getCurrentPosition() > encoderValueLeft) {
+                robot.RLM.setTargetPosition(encoderValueLeft);
+                robot.RLM.setPower(-1);
+            }
+            else {
+                robot.RLM.setPower(0);
+            }
+            //right side encoders
+            if (robot.WM40.getCurrentPosition() < encoderValueRight) {
+                robot.WM40.setTargetPosition(encoderValueRight);
+                robot.WM40.setPower(1);
+            }
+            else if (robot.WM40.getCurrentPosition() > encoderValueRight) {
+                robot.WM40.setTargetPosition(encoderValueRight);
+                robot.WM40.setPower(-1);
+            }
+            else {
                 robot.WM40.setPower(0);
             }
 

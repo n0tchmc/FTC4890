@@ -1,10 +1,20 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -12,8 +22,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "EncoderTest", preselectTeleOp = "Teleop4890")
-public class EncoderTest extends LinearOpMode {
+@Autonomous(name = "LEFT-Auto4890", preselectTeleOp = "Teleop4890")
+public class LeftAutonomous4890 extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline pipeline;
     Robot robot = new Robot();
@@ -51,16 +61,6 @@ public class EncoderTest extends LinearOpMode {
 
         robot.init(hardwareMap);
 
-        robot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        robot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        robot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        robot.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        robot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         //initializes the camera and sets it up for which camera will be used.
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "camera");
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
@@ -85,6 +85,11 @@ public class EncoderTest extends LinearOpMode {
         });
 
         detection detectionResult = detection.DETECTION_FAILED;
+
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        Pose2d pose = new Pose2d(0, 0, Math.toRadians(-90));    //initial position
+        drive.setPoseEstimate(pose);
 
         while (!isStarted()) {
             ArrayList<AprilTagDetection> detections = pipeline.getDetectionsUpdate();
@@ -143,58 +148,15 @@ public class EncoderTest extends LinearOpMode {
 
         if(isStopRequested()) return;
 
-        straight(0.4,5000);
+        if (detectionResult == detection.LEFT) {
 
-        //if(isStopRequested()) return;
+        } else if (detectionResult == detection.MIDDLE) {
 
-    }
+        } else if (detectionResult == detection.RIGHT) {
 
-    void straight(double power, int milliseconds) {
-        robot.frontLeft.setPower(power);
-        robot.backLeft.setPower(power);
-        robot.frontRight.setPower(power);
-        robot.backRight.setPower(power);
-        sleep(milliseconds);
-        robot.frontLeft.setPower(0);
-        robot.backLeft.setPower(0);
-        robot.frontRight.setPower(0);
-        robot.backRight.setPower(0);
-    }
+        } else {
 
-    void strafeLeft(double power, int milliseconds) {
-        robot.frontRight.setPower(power);
-        robot.frontLeft.setPower(-power);
-        robot.backRight.setPower(-power);
-        robot.backLeft.setPower(power);
-        sleep(milliseconds);
-        robot.frontLeft.setPower(0);
-        robot.backLeft.setPower(0);
-        robot.frontRight.setPower(0);
-        robot.backRight.setPower(0);
-    }
-
-    void strafeRight(double power, int milliseconds) {
-        robot.frontRight.setPower(-power);
-        robot.frontLeft.setPower(power);
-        robot.backRight.setPower(power);
-        robot.backLeft.setPower(-power);
-        sleep(milliseconds);
-        robot.frontLeft.setPower(0);
-        robot.backLeft.setPower(0);
-        robot.frontRight.setPower(0);
-        robot.backRight.setPower(0);
-    }
-
-    void rotate(double power, int milliseconds) { //note: default rotate clockwise
-        robot.frontRight.setPower(-power);
-        robot.frontLeft.setPower(power);
-        robot.backRight.setPower(-power);
-        robot.backLeft.setPower(power);
-        sleep(milliseconds);
-        robot.frontLeft.setPower(0);
-        robot.backLeft.setPower(0);
-        robot.frontRight.setPower(0);
-        robot.backRight.setPower(0);
+        }
     }
 
     void arm(double power, int milliseconds) {
