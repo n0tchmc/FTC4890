@@ -13,74 +13,41 @@ public class MeepMeepTesting {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(30, 45, 6.281111240386963, Math.toRadians(60), 13.26)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(34, -63, Math.toRadians(90)))
-                                //LOW FIRST
-                                .forward(5)
-                                .turn(Math.toRadians(45))
-                                .addDisplacementMarker(() -> {
-                                    //arm raise
-                                })
-                                .waitSeconds(1)
-                                .forward(2)
-                                .addDisplacementMarker(() -> {
-                                    //claw drop
-                                })
+                        drive.trajectorySequenceBuilder(new Pose2d(34.5, -64, Math.toRadians(90)))
+                                .waitSeconds(0.4)
+                                .forward(51)
+                                .turn(Math.toRadians(50))
+
+                                .waitSeconds(2.3)
+                                .forward(3.7)
                                 .waitSeconds(0.3)
-                                .back(3)
-                                .addDisplacementMarker(() -> {
-                                    //arm lower
-                                })
-                                //GO TO STACK
-                                .turn(Math.toRadians(-45))
-                                .forward(46)
-                                .turn(Math.toRadians(-90))
-                                .forward(25)
-                                .addDisplacementMarker(() -> {
-                                    //grab then raise
-                                })
-                                .waitSeconds(0.6)
-                                .back(25)
-                                //HIGH GOAL 1
-                                .turn(Math.toRadians(135))
-                                .forward(3)
-                                .addDisplacementMarker(() -> {
-                                    //raise
-                                })
-                                .waitSeconds(1) //wait for arm raise
-                                .forward(1)
-                                .addDisplacementMarker(() -> {
-                                    //release
-                                })
+                                .back(3.7)
+                                .waitSeconds(2.3)
+
+                                .turn(Math.toRadians(-140))
+                                .forward(26)
+                                .waitSeconds(2.3)
+                                .back(26)
+                                .turn(Math.toRadians(140))
+
+                                .waitSeconds(2.3)
+                                .forward(3.7)
                                 .waitSeconds(0.3)
-                                .back(4)
-                                .addDisplacementMarker(() -> {
-                                    //lower
-                                })
-                                .turn(Math.toRadians(-135))
-                                //BACK TO STACK
-                                .forward(25)
-                                .addDisplacementMarker(() -> {
-                                    //grab then raise
-                                })
-                                .waitSeconds(0.6)
-                                .back(25)
-                                //HIGH GOAL 2
-                                .turn(Math.toRadians(135))
-                                .forward(3)
-                                .addDisplacementMarker(() -> {
-                                    //raise
-                                })
-                                .waitSeconds(1) //wait for arm raise
-                                .forward(1)
-                                .addDisplacementMarker(() -> {
-                                    //release
-                                })
+                                .back(3.7)
+                                .waitSeconds(2.3)
+
+                                .turn(Math.toRadians(-140))
+                                .forward(26)
+                                .waitSeconds(2.3)
+                                .back(26)
+                                .turn(Math.toRadians(140))
+
+                                .waitSeconds(2.3)
+                                .forward(3.7)
                                 .waitSeconds(0.3)
-                                .back(4)
-                                .addDisplacementMarker(() -> {
-                                    //lower
-                                })
-                                .turn(Math.toRadians(-135))
+                                .back(3.7)
+                                .waitSeconds(2.3)
+
                                 .build()
                 );
 

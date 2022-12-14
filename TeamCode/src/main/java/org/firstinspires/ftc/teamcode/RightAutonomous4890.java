@@ -5,16 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -22,8 +15,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "LEFT-Auto4890", preselectTeleOp = "Teleop4890")
-public class LeftAutonomous4890 extends LinearOpMode {
+@Autonomous(name = "RIGHT-Auto4890", preselectTeleOp = "Teleop4890")
+public class RightAutonomous4890 extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline pipeline;
     Robot robot = new Robot();
@@ -88,8 +81,32 @@ public class LeftAutonomous4890 extends LinearOpMode {
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        Pose2d pose = new Pose2d(0, 0, Math.toRadians(-90));    //initial position
+        Pose2d pose = new Pose2d(34.5, -64, Math.toRadians(90));    //initial position
         drive.setPoseEstimate(pose);
+
+        TrajectorySequence preload1 = drive.trajectorySequenceBuilder(pose)
+                .waitSeconds(0.4)
+                .forward(51)
+                .turn(Math.toRadians(50))
+                .build();
+
+        TrajectorySequence forwardHigh = drive.trajectorySequenceBuilder(preload1.end())
+                .forward(3.7)
+                .build();
+
+        TrajectorySequence backwardHigh = drive.trajectorySequenceBuilder(forwardHigh.end())
+                .back(3.7)
+                .build();
+
+        TrajectorySequence toStack = drive.trajectorySequenceBuilder(backwardHigh.end())
+                .turn(Math.toRadians(-140))
+                .forward(26)
+                .build();
+
+        TrajectorySequence fromStack = drive.trajectorySequenceBuilder(toStack.end())
+                .back(26)
+                .turn(Math.toRadians(140))
+                .build();
 
         while (!isStarted()) {
             ArrayList<AprilTagDetection> detections = pipeline.getDetectionsUpdate();
@@ -148,9 +165,54 @@ public class LeftAutonomous4890 extends LinearOpMode {
 
         if(isStopRequested()) return;
 
+        robot.RLM.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.WM40.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         if (detectionResult == detection.LEFT) {
 
         } else if (detectionResult == detection.MIDDLE) {
+            //first preload cone
+            robot.claw.setPosition(0);
+            drive.followTrajectorySequence(preload1);
+
+            armUp(4640,5640);
+
+            drive.followTrajectorySequence(forwardHigh);
+            robot.claw.setPosition(0.3);
+            sleep(300);
+            drive.followTrajectorySequence(backwardHigh);
+
+            armDown(1335, 2280);
+
+            //first cone in stack
+            drive.followTrajectorySequence(toStack);
+            robot.claw.setPosition(0);
+            armUp(2240, 3975);
+            drive.followTrajectorySequence(fromStack);
+
+            armUp(4640,5640);
+
+            drive.followTrajectorySequence(forwardHigh);
+            robot.claw.setPosition(0.3);
+            sleep(300);
+            drive.followTrajectorySequence(backwardHigh);
+
+            armDown(1135, 2080);
+
+            //second cone in stack
+            drive.followTrajectorySequence(toStack);
+            robot.claw.setPosition(0);
+            armUp(2240, 3975);
+            drive.followTrajectorySequence(fromStack);
+
+            armUp(4640,5640);
+
+            drive.followTrajectorySequence(forwardHigh);
+            robot.claw.setPosition(0.3);
+            sleep(300);
+            drive.followTrajectorySequence(backwardHigh);
+
+            armDown(935, 1880);
 
         } else if (detectionResult == detection.RIGHT) {
 
@@ -159,11 +221,37 @@ public class LeftAutonomous4890 extends LinearOpMode {
         }
     }
 
-    void arm(double power, int milliseconds) {
-        robot.RLM.setPower(power);
-        robot.WM40.setPower(power);
-        sleep(milliseconds);
-        robot.RLM.setPower(0);
+    void armUp(int left, int right) {
+        robot.WM40.setTargetPosition(right);
+        robot.RLM.setTargetPosition(left);
+
+        robot.RLM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.WM40.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.WM40.setPower(1);
+        robot.RLM.setPower(1);
+        while(robot.WM40.isBusy() || robot.RLM.isBusy()){
+
+        }
         robot.WM40.setPower(0);
+        robot.RLM.setPower(0);
     }
+
+    void armDown(int left, int right) {
+        robot.WM40.setTargetPosition(right);
+        robot.RLM.setTargetPosition(left);
+
+        robot.RLM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.WM40.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.WM40.setPower(-1);
+        robot.RLM.setPower(-1);
+        while(robot.WM40.isBusy() || robot.RLM.isBusy()){
+
+        }
+        robot.WM40.setPower(0);
+        robot.RLM.setPower(0);
+    }
+
 }
+
