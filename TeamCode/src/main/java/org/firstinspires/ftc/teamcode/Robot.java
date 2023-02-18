@@ -29,10 +29,13 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Robot {
@@ -46,6 +49,9 @@ public class Robot {
     public DcMotor frontLeft;
     public DcMotor backLeft;
     public Servo claw;
+    public DigitalChannel leftTouch;
+    public DigitalChannel rightTouch;
+    public ColorSensor clawColor;
 
 
     /* local OpMode members. */
@@ -70,6 +76,10 @@ public class Robot {
         RLM = hwMap.get(DcMotor.class, "RLM");      //left side (looking behind the robot)
         WM40 = hwMap.get(DcMotor.class, "WM40");    //right side
         claw = hwMap.get(Servo.class, "claw");
+        leftTouch = hwMap.digitalChannel.get("leftTouch");
+        rightTouch = hwMap.digitalChannel.get( "rightTouch");
+        clawColor = hwMap.colorSensor.get("clawColor");
+
 
         // Setting motor directions
         frontLeft.setDirection(DcMotor.Direction.FORWARD);
@@ -78,6 +88,8 @@ public class Robot {
         backRight.setDirection(DcMotor.Direction.REVERSE);
         RLM.setDirection(DcMotor.Direction.REVERSE);
         WM40.setDirection(DcMotor.Direction.REVERSE);
+        leftTouch.setMode(DigitalChannel.Mode.INPUT);
+        rightTouch.setMode(DigitalChannel.Mode.INPUT);
     }
 }
 

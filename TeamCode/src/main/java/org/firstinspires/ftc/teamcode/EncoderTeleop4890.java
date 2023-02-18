@@ -112,24 +112,24 @@ public class EncoderTeleop4890 extends LinearOpMode {
             }*/
 
             if(gamepad2.dpad_left) { //low
-                encoderValueLeft = 2240;
-                encoderValueRight = 3975;
+                encoderValueLeft = 2134;
+                encoderValueRight = 2543;
             }
             else if (gamepad2.dpad_up) { //med
-                encoderValueLeft = 3205;
-                encoderValueRight = 5995;
+                encoderValueLeft = 3360;
+                encoderValueRight = 3982;
             }
             else if (gamepad2.dpad_right) { // high
                 encoderValueLeft = 4600;
-                encoderValueRight = 8050;
+                encoderValueRight = 4600;
             }
             else if (gamepad2.dpad_down) { // ground
                 encoderValueLeft = 0;
                 encoderValueRight = 0;
             }
             else if (gamepad2.left_bumper) { //1st in stack
-                encoderValueLeft = 1285;
-                encoderValueRight = 2230;
+                encoderValueLeft = 406;
+                encoderValueRight = 1119;
             }
             else if (gamepad2.right_bumper) { //200ish ticks down per each cone
                 encoderValueLeft -= 200;
@@ -162,7 +162,7 @@ public class EncoderTeleop4890 extends LinearOpMode {
             }
 
             if (gamepad2.b) {
-                robot.claw.setPosition(0.30);
+                robot.claw.setPosition(0.4);
             }
             else if (gamepad2.a) {
                 robot.claw.setPosition(0);

@@ -11,18 +11,24 @@ import java.util.Arrays;
 public class Teleop4890 extends LinearOpMode {
     Robot robot = new Robot();
 
-    Gamepad.RumbleEffect customRumbleEffect;
+    Gamepad.RumbleEffect armDownAlert;
     Gamepad.RumbleEffect endGameWarn;
     Gamepad.RumbleEffect roundEndWarn;
+    Gamepad.RumbleEffect coneInAlert;
 
-    int robotCycle = 0;
+
     double slowToggle;
+    boolean armUp;
+    boolean coneIn;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        customRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.8, 0.8, 500)  //  Rumble both motors 80% for 500 mSec
+        armDownAlert = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.5, 0.8, 700)  //  Rumble both motors 80% for 700 mSec
+                .build();
+        coneInAlert = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.5, 0.3, 700)  //  Rumble both motors 80% for 700 mSec
                 .build();
         endGameWarn = new Gamepad.RumbleEffect.Builder()
                 .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
@@ -51,18 +57,28 @@ public class Teleop4890 extends LinearOpMode {
 
         robot.RLM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.WM40.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
         resetRuntime();
 
         while (opModeIsActive()) {
-            telemetry.addData("Robot Cycle", robotCycle);
             telemetry.addData("Match Time (s)", getRuntime());
-            telemetry.addData("Arm Motor Power", robot.RLM.getPower());
-            telemetry.addData("Left Stick Y value", gamepad2.left_stick_y);
-            telemetry.addData("Right Stick Y value", gamepad2.right_stick_y);
-            telemetry.addData("Left Encoder Count", robot.RLM.getCurrentPosition());
-            telemetry.addData("Right Encoder Count", robot.WM40.getCurrentPosition());
+            telemetry.addData("FL Count", robot.frontLeft.getCurrentPosition());
+            telemetry.addData("FR Count", robot.frontRight.getCurrentPosition());
+            telemetry.addData("BL Count", robot.backLeft.getCurrentPosition());
+            telemetry.addData("BR Count", robot.backRight.getCurrentPosition());
+            telemetry.addData("Left Arm Count", robot.RLM.getCurrentPosition());
+            telemetry.addData("Right Arm Count", robot.WM40.getCurrentPosition());
+            //telemetry.addData("Left Touch", robot.leftTouch.getState());
+            //telemetry.addData("Right Touch", robot.rightTouch.getState());
+            //telemetry.addData("Arm Up", armUp);
+            telemetry.addData("Red", robot.clawColor.red());
+            telemetry.addData("Green", robot.clawColor.green());
+            telemetry.addData("Blue", robot.clawColor.blue());
             telemetry.update();
 
             //controller 1 functions
@@ -92,14 +108,14 @@ public class Teleop4890 extends LinearOpMode {
                 robot.RLM.setPower(Math.abs(gamepad2.left_stick_y));
                 robot.WM40.setPower(Math.abs(gamepad2.left_stick_y));
             }
-            else if ((gamepad2.left_stick_y > 0) && (gamepad2.right_stick_y > 0)) { //make sure this condition is first
+            else if ((gamepad2.left_stick_y > 0) && (gamepad2.right_stick_y > 0) && (robot.leftTouch.getState()) && (robot.rightTouch.getState())) { //make sure this condition is first
                 robot.RLM.setPower(-Math.abs(gamepad2.left_stick_y));
                 robot.WM40.setPower(-Math.abs(gamepad2.right_stick_y));
             }
-            else if (gamepad2.right_stick_y > 0) {
+            else if (gamepad2.right_stick_y > 0 && (robot.rightTouch.getState())) {
                 robot.WM40.setPower(-Math.abs(gamepad2.right_stick_y));
             }
-            else if (gamepad2.left_stick_y > 0) {
+            else if (gamepad2.left_stick_y > 0 && (robot.leftTouch.getState())) {
                 robot.RLM.setPower(-Math.abs(gamepad2.left_stick_y));
             }
             else {
@@ -108,7 +124,7 @@ public class Teleop4890 extends LinearOpMode {
             }
 
             if (gamepad2.b) {
-                robot.claw.setPosition(0.30);
+                robot.claw.setPosition(0.4);
             }
             else if (gamepad2.a) {
                 robot.claw.setPosition(0);
@@ -121,13 +137,32 @@ public class Teleop4890 extends LinearOpMode {
             }
 
 
-            //endGame 5 second warning
+            //endGame 5 second warning, round end 3 second warning
             if (getRuntime() >= 87 && getRuntime() <= 89) {
                 gamepad1.runRumbleEffect(endGameWarn);
                 gamepad2.runRumbleEffect(endGameWarn);
             } else if (getRuntime() >= 117 && getRuntime() <= 119) {
                 gamepad1.runRumbleEffect(roundEndWarn);
                 gamepad2.runRumbleEffect(roundEndWarn);
+            }
+
+            //alerts if arm is down completely
+            if ((robot.leftTouch.getState() == false || robot.rightTouch.getState() == false) && armUp == true) {
+                armUp = false;
+                gamepad2.runRumbleEffect(armDownAlert);
+            }
+            else if (robot.leftTouch.getState() == true && robot.rightTouch.getState() == true) {
+                armUp = true;
+            }
+
+            //alerts if a cone is in the claw
+            if ((robot.clawColor.red() >= 350 || robot.clawColor.blue() >= 350) && coneIn == false) {
+                coneIn = true;
+                gamepad1.runRumbleEffect(coneInAlert);
+                gamepad2.runRumbleEffect(coneInAlert);
+            }
+            else if ((robot.clawColor.red() < 350 && robot.clawColor.blue() < 350)) {
+                coneIn = false;
             }
 
             idle();

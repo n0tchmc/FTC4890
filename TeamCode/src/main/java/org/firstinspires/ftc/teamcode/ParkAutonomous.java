@@ -15,8 +15,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "RIGHT-Auto4890", preselectTeleOp = "Teleop4890")
-public class RightAutonomous4890 extends LinearOpMode {
+@Autonomous(name = "PARK-Auto4890", preselectTeleOp = "Teleop4890")
+public class ParkAutonomous extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline pipeline;
     Robot robot = new Robot();
@@ -84,28 +84,23 @@ public class RightAutonomous4890 extends LinearOpMode {
         Pose2d pose = new Pose2d(34.5, -64, Math.toRadians(90));    //initial position
         drive.setPoseEstimate(pose);
 
-        TrajectorySequence preload1 = drive.trajectorySequenceBuilder(pose)
-                .waitSeconds(0.4)
-                .forward(51)
-                .turn(Math.toRadians(50))
+
+        TrajectorySequence park1 = drive.trajectorySequenceBuilder(pose)
+                .waitSeconds(0.3)
+                .forward(27)
+                .turn(Math.toRadians(90))
+                .forward(21)
                 .build();
 
-        TrajectorySequence forwardHigh = drive.trajectorySequenceBuilder(preload1.end())
-                .forward(3.7)
+        TrajectorySequence park2 = drive.trajectorySequenceBuilder(pose)
+                .waitSeconds(0.3)
+                .forward(40)
                 .build();
-
-        TrajectorySequence backwardHigh = drive.trajectorySequenceBuilder(forwardHigh.end())
-                .back(3.7)
-                .build();
-
-        TrajectorySequence toStack = drive.trajectorySequenceBuilder(backwardHigh.end())
-                .turn(Math.toRadians(-140))
-                .forward(26)
-                .build();
-
-        TrajectorySequence fromStack = drive.trajectorySequenceBuilder(toStack.end())
-                .back(26)
-                .turn(Math.toRadians(140))
+        TrajectorySequence park3 = drive.trajectorySequenceBuilder(pose)
+                .waitSeconds(0.3)
+                .forward(27)
+                .turn(Math.toRadians(-90))
+                .forward(22)
                 .build();
 
         while (!isStarted()) {
@@ -161,97 +156,51 @@ public class RightAutonomous4890 extends LinearOpMode {
             }
         }
 
-        waitForStart();
-
-        if(isStopRequested()) return;
-
         robot.RLM.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.WM40.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.WM40.setPower(1);
+        robot.RLM.setPower(1);
+        robot.RLM.setTargetPosition(0);
+        robot.WM40.setTargetPosition(0);
+        robot.RLM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.WM40.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        waitForStart();
 
         if (detectionResult == detection.LEFT) {
+            //first preload cone
+            robot.claw.setPosition(0);
+            sleep(100);
+            drive.followTrajectorySequence(park1);
+            robot.claw.setPosition(0.35);
+            sleep(1000);
 
         } else if (detectionResult == detection.MIDDLE) {
             //first preload cone
             robot.claw.setPosition(0);
-            drive.followTrajectorySequence(preload1);
-
-            armUp(4640,5640);
-
-            drive.followTrajectorySequence(forwardHigh);
-            robot.claw.setPosition(0.3);
-            sleep(300);
-            drive.followTrajectorySequence(backwardHigh);
-
-            armDown(1335, 2280);
-
-            //first cone in stack
-            drive.followTrajectorySequence(toStack);
-            robot.claw.setPosition(0);
-            armUp(2240, 3975);
-            drive.followTrajectorySequence(fromStack);
-
-            armUp(4640,5640);
-
-            drive.followTrajectorySequence(forwardHigh);
-            robot.claw.setPosition(0.3);
-            sleep(300);
-            drive.followTrajectorySequence(backwardHigh);
-
-            armDown(1135, 2080);
-
-            //second cone in stack
-            drive.followTrajectorySequence(toStack);
-            robot.claw.setPosition(0);
-            armUp(2240, 3975);
-            drive.followTrajectorySequence(fromStack);
-
-            armUp(4640,5640);
-
-            drive.followTrajectorySequence(forwardHigh);
-            robot.claw.setPosition(0.3);
-            sleep(300);
-            drive.followTrajectorySequence(backwardHigh);
-
-            armDown(935, 1880);
+            sleep(100);
+            drive.followTrajectorySequence(park2);
+            robot.claw.setPosition(0.35);
+            sleep(1000);
 
         } else if (detectionResult == detection.RIGHT) {
+            //first preload cone
+            robot.claw.setPosition(0);
+            sleep(100);
+            drive.followTrajectorySequence(park3);
+            robot.claw.setPosition(0.35);
+            sleep(1000);
 
         } else {
+            //first preload cone
+            robot.claw.setPosition(0);
+            sleep(100);
+            drive.followTrajectorySequence(park2);
+            robot.claw.setPosition(0.35);
+            sleep(1000);
 
         }
+
+        if(isStopRequested()) return;
     }
-
-    void armUp(int left, int right) {
-        robot.WM40.setTargetPosition(right);
-        robot.RLM.setTargetPosition(left);
-
-        robot.RLM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.WM40.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        robot.WM40.setPower(1);
-        robot.RLM.setPower(1);
-        while(robot.WM40.isBusy() || robot.RLM.isBusy()){
-
-        }
-        robot.WM40.setPower(0);
-        robot.RLM.setPower(0);
-    }
-
-    void armDown(int left, int right) {
-        robot.WM40.setTargetPosition(right);
-        robot.RLM.setTargetPosition(left);
-
-        robot.RLM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.WM40.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        robot.WM40.setPower(-1);
-        robot.RLM.setPower(-1);
-        while(robot.WM40.isBusy() || robot.RLM.isBusy()){
-
-        }
-        robot.WM40.setPower(0);
-        robot.RLM.setPower(0);
-    }
-
 }
-
