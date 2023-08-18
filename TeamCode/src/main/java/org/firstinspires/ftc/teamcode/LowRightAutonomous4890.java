@@ -271,7 +271,7 @@ public class LowRightAutonomous4890 extends LinearOpMode {
                         pipeline.setDecimation(DECIMATION_HIGH);
                     }
 
-                    if (detections.get(0).id == 1) {
+                    if (detections.get(0). == 1) {
                         detectionResult = detection.LEFT;
                     } else if (detections.get(0).id == 2) {
                         detectionResult = detection.MIDDLE;
